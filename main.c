@@ -6,17 +6,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define boolean unsigned char
+
+typedef unsigned char pin
 
 /* Function Prototypes */
 void dumpPin();
-int pin2Dec(boolean*,int);
+int pin2Dec(pin*,int);
 
 /* Pin Declaration */
-boolean PIN_IN_K[4];			// Key input [3:0]
-boolean PIN_IN_CK[2];			// Current key position
-boolean PIN_INOUT_S;			// Current State
-boolean PIN_OUT_UL;				// Unlocked
+pin PIN_IN_K[4];			// Key input [3:0]
+pin PIN_IN_CK[2];			// Current key position
+pin PIN_OUT_UL;				// Unlocked
 
 /* Register Declaration */
 
@@ -29,11 +29,10 @@ void dumpPin() {
 												 PIN_IN_K[0],
 												 pin2Dec(PIN_IN_K, 4));
 	printf("PIN_IN_CL:\t0b%1d%1d\t(%d)\n", PIN_IN_CK[1], PIN_IN_CK[0], pin2Dec(PIN_IN_CK, 2));
-	printf("PIN_INOUT_S:\t0b%1d\n", PIN_INOUT_S);
 	printf("PIN_OUT_UL:\t0b%1d\n", PIN_OUT_UL);
 }
 
-int pin2Dec(boolean* pins, int length) {
+int pin2Dec(pin* pins, int length) {
 	int acc = 0;
 	int i;
 
