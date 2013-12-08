@@ -13,11 +13,13 @@ typedef struct registers {
   pin d[4];
 } reg;
 typedef unsigned char uint1;
-typedef char int1;
 
 /* Function Prototypes */
 void dumpPin();
+void dumpReg();
+void reset();
 int pin2Dec(pin*,int);
+int regCmp(reg,reg,int);
 
 /* Pin Declaration */
 pin PIN_IN_K[4];			// Key input [3:0]
@@ -29,7 +31,7 @@ pin PIN_OUT_E3;				// 3 Errors
 /* Register Declaration */
 reg KEY[4];					// Current stored key
 reg BUF[4];					// Input buffer
-reg ERR[3];					// Error Counter
+reg ERR;					// Error Counter
 
 void dumpPin() {
 	printf("==== [Current Pin State] ====\n");
@@ -40,6 +42,8 @@ void dumpPin() {
 												 pin2Dec(PIN_IN_K, 4));
 	printf("PIN_IN_CK:\t0b%1d%1d\t(%d)\n", PIN_IN_CK[1], PIN_IN_CK[0], pin2Dec(PIN_IN_CK, 2));
 	printf("PIN_OUT_UL:\t0b%1d\t[%s]\n", PIN_OUT_UL, PIN_OUT_UL?"UNLOCKED":"LOCKED");
+	printf("PIN_OUT_E3:\t0b%1d\n", PIN_OUT_E3);
+	printf("PIN_OUT_E5:\t0b%1d\n", PIN_OUT_E5);
 }
 
 void dumpReg() {
@@ -52,6 +56,7 @@ void dumpReg() {
 								 pin2Dec(BUF[1].d, 4),
 								 pin2Dec(BUF[2].d, 4),
 								 pin2Dec(BUF[3].d, 4));
+	printf("ERR:\t0x%x\t(%d)\n",   pin2Dec(ERR.d,3), pin2Dec(ERR.d,3));
 }
 
 int pin2Dec(pin* pins, int length) {
@@ -76,7 +81,10 @@ void reset() {
 	bzero(PIN_IN_CK, sizeof(pin) * 2);
 	bzero(KEY, sizeof(struct registers) * 4);
 	bzero(BUF, sizeof(struct registers) * 4);
+	bzero(&ERR, sizeof(struct registers) * 1);
 	PIN_OUT_UL = 1;
+	PIN_OUT_E5 = 0;
+	PIN_OUT_E3 = 0;
 }
 
 int main(int argc, char** argv) {
@@ -93,7 +101,7 @@ int main(int argc, char** argv) {
 	curPos = pin2Dec(PIN_IN_CK, 2);
 
 	/* Start */
-	while (1) {
+	while (1 && !PIN_OUT_E5) {
 		if ( PIN_OUT_UL) {
 			/*** Unlocked ***/
 			input = getchar();	
@@ -136,12 +144,22 @@ int main(int argc, char** argv) {
 						for (i=0; i<4 && match; i++) match = regCmp(KEY[i], BUF[i], 4);
 						if (!match) {
 							errCount++;
-							ERR[0] = errCount %2;
-							ERR[1] = errCount /2;
-							ERR[2] = errCount /4;
+							ERR.d[2]=(errCount >> 2) & 1;;
+							ERR.d[1]=(errCount >> 1) & 1;
+							ERR.d[0]=errCount & 1;
 						} else {
+							errCount = 0;
+							bzero(&ERR, sizeof(struct registers));
 							PIN_OUT_UL = 1;	// Locked
 						}
+
+						if (errCount == 3) {
+							PIN_OUT_E3 = 1;
+						} else if (errCount == 5) {
+							PIN_OUT_E3 = 0;
+							PIN_OUT_E5 = 1;
+						}
+						
 						curPos = 0;
 						bzero(BUF, sizeof(struct registers) * 4);
 
