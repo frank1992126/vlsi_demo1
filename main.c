@@ -178,3 +178,4 @@ int main(int argc, char** argv) {
 		if (bitpos == 255) bitpos = 3;
 	}
 }
+
