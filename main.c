@@ -8,6 +8,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Color ASCII */
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
+/* Type Definitions */
 typedef unsigned char pin;
 typedef struct registers {
   pin d[4];
@@ -34,29 +45,32 @@ reg BUF[4];					// Input buffer
 reg ERR;					// Error Counter
 
 void dumpPin() {
-	printf("==== [Current Pin State] ====\n");
-	printf("PIN_IN_K:\t0b%1d%1d%1d%1d\t(%x)\n", PIN_IN_K[3],
+	printf(KGRN "==== [Current Pin State] ====\n" KGRN);
+	printf(KRED "PIN_IN_K:\t%s0b%1d%1d%1d%1d\t(%x)\n", KYEL,
+												 PIN_IN_K[3],
 												 PIN_IN_K[2],
 												 PIN_IN_K[1],
 												 PIN_IN_K[0],
 												 pin2Dec(PIN_IN_K, 4));
-	printf("PIN_IN_CK:\t0b%1d%1d\t(%d)\n", PIN_IN_CK[1], PIN_IN_CK[0], pin2Dec(PIN_IN_CK, 2));
-	printf("PIN_OUT_UL:\t0b%1d\t[%s]\n", PIN_OUT_UL, PIN_OUT_UL?"UNLOCKED":"LOCKED");
-	printf("PIN_OUT_E3:\t0b%1d\n", PIN_OUT_E3);
-	printf("PIN_OUT_E5:\t0b%1d\n", PIN_OUT_E5);
+	printf(KRED "PIN_IN_CK:\t%s0b%1d%1d\t(%d)\n", KYEL, PIN_IN_CK[1], PIN_IN_CK[0], pin2Dec(PIN_IN_CK, 2));
+	printf(KRED "PIN_OUT_UL:\t%s0b%1d\t[%s]\n", KYEL, PIN_OUT_UL, PIN_OUT_UL?"UNLOCKED":"LOCKED");
+	printf(KRED "PIN_OUT_E3:\t%s0b%1d\n", KYEL, PIN_OUT_E3);
+	printf(KRED "PIN_OUT_E5:\t%s0b%1d\n", KYEL, PIN_OUT_E5);
 }
 
 void dumpReg() {
-	printf("==== [Current Reg State] ====\n");
-	printf("KEY:\t0x%x%x%x%x\n", pin2Dec(KEY[0].d, 4),
+	printf(KGRN "==== [Current Reg State] ====\n" KGRN);
+	printf(KRED "KEY:\t%s0x%x%x%x%x\n", KYEL,
+								 pin2Dec(KEY[0].d, 4),
 								 pin2Dec(KEY[1].d, 4),
 								 pin2Dec(KEY[2].d, 4),
 								 pin2Dec(KEY[3].d, 4));
-	printf("BUF:\t0x%x%x%x%x\n", pin2Dec(BUF[0].d, 4),
+	printf(KRED "BUF:\t%s0x%x%x%x%x\n", KYEL,
+								 pin2Dec(BUF[0].d, 4),
 								 pin2Dec(BUF[1].d, 4),
 								 pin2Dec(BUF[2].d, 4),
 								 pin2Dec(BUF[3].d, 4));
-	printf("ERR:\t0x%x\t(%d)\n",   pin2Dec(ERR.d,3), pin2Dec(ERR.d,3));
+	printf(KRED "ERR:\t%s0x%x\t(%d)\n" KNRM, KYEL, pin2Dec(ERR.d,3), pin2Dec(ERR.d,3));
 }
 
 int pin2Dec(pin* pins, int length) {
