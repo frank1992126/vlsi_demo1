@@ -44,6 +44,13 @@ reg KEY[4];					// Current stored key
 reg BUF[4];					// Input buffer
 reg ERR;					// Error Counter
 
+void helpMsg() {
+	printf(KGRN "==== [Command Available] ====\n");
+	printf(KYEL "d" KNRM " - " KCYN "dump pins and regs\n");
+	printf(KYEL "n" KNRM " - " KCYN "next digit\n");
+	printf(KYEL "0 or 1" KNRM " - " KCYN "binary key input\n" KMAG KNRM);
+	printf(KYEL "h" KNRM " - " KCYN "print this msg\n\n" KMAG KNRM);
+}
 void dumpPin() {
 	printf(KGRN "==== [Current Pin State] ====\n" KGRN);
 	printf(KRED "PIN_IN_K:\t%s0b%1d%1d%1d%1d\t(%x)\n", KYEL,
@@ -107,8 +114,12 @@ int main(int argc, char** argv) {
 	uint1 errCount = 0;			// error counter
 	uint1 bitpos=3;				// which bit
 	
+	/* Print Manual and Introduction */
+	printf(KMAG "==== [VLSI Final Project - Combination Lock Simulator] ====\n" KNRM);
+	helpMsg();
+
 	/* Initialization */
-	fprintf(stderr, "Initializinging...\n");
+	printf("Initializinging...\n" KNRM);
 	reset();
 	dumpPin();
 	dumpReg();
@@ -116,6 +127,7 @@ int main(int argc, char** argv) {
 
 	/* Start */
 	while (1 && !PIN_OUT_E5) {
+		printf("\r> ");
 		if ( PIN_OUT_UL) {
 			/*** Unlocked ***/
 			input = getchar();	
@@ -124,6 +136,9 @@ int main(int argc, char** argv) {
 				case 'd':
 					dumpPin();
 					dumpReg();
+					break;
+				case 'h':
+					helpMsg();
 					break;
 				case 'n':
 					bzero(PIN_IN_K, sizeof(pin) * 4);
@@ -148,6 +163,9 @@ int main(int argc, char** argv) {
 				case 'd':
 					dumpPin();
 					dumpReg();
+					break;
+				case 'h':
+					helpMsg();
 					break;
 				case 'n':
 					bzero(PIN_IN_K, sizeof(pin) * 4);
